@@ -1,0 +1,7 @@
+/.idea
+/index.php
+/vendor/
+/composer.lock
+/tests/
+/phpcs.xml
+/phpunit.xml
