@@ -8,12 +8,13 @@
             "email": "melvine.nargeot@gmail.com"
         }
     ],
+    "license" : "MIT",
     "autoload" : {
         "psr-4" : {
             "Orm\\" : "src"
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {
         "symfony/yaml": "^3.3"
     },
