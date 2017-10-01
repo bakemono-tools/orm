@@ -7,7 +7,28 @@ use Symfony\Component\Yaml\Yaml;
 
 class Orm
 {
+    /**
+     * Contient les informations de connection
+     *
+     * Ex :
+     * [
+     *      'host'     => 'localhost',
+     *      'port'     => null,
+     *      'dbname'  => 'test',
+     *      'user'     => 'root',
+     *      'password' => 'root'
+     * ]
+     *
+     * @var array | string
+     */
     private $connectionParams = [];
+
+    /**
+     * Contient la connection en cours à la base de données
+     *
+     * @var \PDO
+     */
+    private $connection = null;
 
     /**
      * Orm constructor.
@@ -37,7 +58,7 @@ class Orm
              * [
              *      'host'     => 'localhost',
              *      'port'     => null,
-             *      'db_name'  => 'test',
+             *      'dbname'  => 'test',
              *      'user'     => 'root',
              *      'password' => 'root'
              * ]
@@ -67,5 +88,21 @@ class Orm
     public function getConnectionParam(string $param): string
     {
         return $this->connectionParams[$param];
+    }
+
+    /**
+     * Retourne une instance de PDO
+     * Si aucune instance existe, elle en créé une et la retourne
+     *
+     * @return \PDO
+     */
+    public function getDatabaseConnection()
+    {
+        if ($this->connection == null) {
+            $databaseConnection = new DatabaseConnection($this->getConnectionParams());
+            $this->connection = $databaseConnection->getConnection();
+        }
+
+        return $this->connection;
     }
 }
