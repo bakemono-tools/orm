@@ -96,7 +96,8 @@ class Orm
      *
      * @return \PDO
      */
-    public function getDatabaseConnection() {
+    public function getDatabaseConnection()
+    {
         if ($this->connection == null) {
             $databaseConnection = new DatabaseConnection($this->getConnectionParams());
             $this->connection = $databaseConnection->getConnection();
