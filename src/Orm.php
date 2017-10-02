@@ -26,9 +26,16 @@ class Orm
     /**
      * Contient la connection en cours à la base de données
      *
-     * @var \PDO
+     * @var DatabaseConnection
      */
-    private $connection = null;
+    private $databaseConnection;
+
+    /**
+     * Contient le database schema manager
+     *
+     * @var DatabaseSchemaManager
+     */
+    private $dbSchemaManager;
 
     /**
      * Orm constructor.
@@ -67,6 +74,8 @@ class Orm
         } else {
             die("Une erreur est survenue lors de la lecture de la configuration. [" . __FILE__ . "][" . __LINE__ . "]");
         }
+
+        $this->dbSchemaManager = new DatabaseSchemaManager($this->getDatabaseConnection()->getConnection());
     }
 
     /**
@@ -94,15 +103,25 @@ class Orm
      * Retourne une instance de PDO
      * Si aucune instance existe, elle en créé une et la retourne
      *
-     * @return \PDO
+     * @return DatabaseConnection
      */
     public function getDatabaseConnection()
     {
-        if ($this->connection == null) {
-            $databaseConnection = new DatabaseConnection($this->getConnectionParams());
-            $this->connection = $databaseConnection->getConnection();
+        if ($this->databaseConnection == null) {
+            $this->databaseConnection = new DatabaseConnection($this->getConnectionParams());
         }
 
-        return $this->connection;
+        return $this->databaseConnection;
+    }
+
+    public function updateDatabaseSchema(array $entitiesSchemaArray)
+    {
+        $entitiesSchema = new Schema();
+        $entitiesSchema->parseEntitiesSchema($entitiesSchemaArray);
+
+        $databaseSchema = new Schema();
+        $databaseSchema->parseDatabaseSchema($this->getDatabaseConnection()->getDatabaseDescription());
+
+        return $this->dbSchemaManager->updateDatabase($entitiesSchema, $databaseSchema);
     }
 }

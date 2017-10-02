@@ -43,4 +43,24 @@ class DatabaseConnection
     {
         return $this->connection;
     }
+
+    /**
+     * Retourne les tables ainsi que les colonnes présentes dans la base de données
+     *
+     * @return array
+     */
+    public function getDatabaseDescription(): array
+    {
+        $tmpArray = [];
+
+        $tables = $this->connection->query('SHOW TABLES');
+        $tables = $tables->fetchAll();
+
+        foreach ($tables as $table) {
+            $description = $this->connection->query('DESC ' . $table[0]);
+            $tmpArray[$table[0]] = $description->fetchAll();
+        }
+
+        return $tmpArray;
+    }
 }
