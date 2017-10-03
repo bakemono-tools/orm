@@ -46,7 +46,7 @@ class Schema
      */
     public function parseEntitiesSchema(array $schema)
     {
-        $this->schema = $schema;
+        $this->schema = $schema['entities'];
     }
 
     /**

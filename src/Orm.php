@@ -38,10 +38,25 @@ class Orm
     private $dbSchemaManager;
 
     /**
-     * Orm constructor.
-     * @param string $filePath Chemin ABSOLUE vers le fichier de configuration
+     * Contient l'entityManager
+     *
+     * @var EntityManager
      */
-    public function __construct(string $filePath)
+    private $entityManager;
+
+    /**
+     * Contient le chemin absolu vers le fichier de définition des entités
+     *
+     * @var string
+     */
+    private $entityDefinitionFilePath;
+
+    /**
+     * Orm constructor.
+     * @param string $configurationFilePath Chemin ABSOLUE vers le fichier de configuration
+     * @param string $entityDefinitionFilePath Chemin ABSOLUE vers le fichier des entités
+     */
+    public function __construct(string $configurationFilePath, string $entityDefinitionFilePath)
     {
         $config = null;
 
@@ -49,9 +64,9 @@ class Orm
          * On tente de lire le fichier de configuration contenant les paramètres de connexion à la base de données
          */
         try {
-            $config = Yaml::parse(file_get_contents($filePath));
+            $config = Yaml::parse(file_get_contents($configurationFilePath));
         } catch (ParseException $e) {
-            printf("Impossible de lire le fichier de configuration [%s] : %s", $filePath, $e->getMessage());
+            printf("Impossible de lire le fichier de configuration [%s] : %s", $configurationFilePath, $e->getMessage());
         }
 
         /**
@@ -75,7 +90,9 @@ class Orm
             die("Une erreur est survenue lors de la lecture de la configuration. [" . __FILE__ . "][" . __LINE__ . "]");
         }
 
+        $this->entityDefinitionFilePath = $entityDefinitionFilePath;
         $this->dbSchemaManager = new DatabaseSchemaManager($this->getDatabaseConnection()->getConnection());
+        $this->entityManager = new EntityManager($this->getDatabaseConnection(), $this->entityDefinitionFilePath);
     }
 
     /**
@@ -114,14 +131,35 @@ class Orm
         return $this->databaseConnection;
     }
 
-    public function updateDatabaseSchema(array $entitiesSchemaArray)
+    /**
+     * @return array
+     */
+    public function updateDatabaseSchema()
     {
+        $entitiesDefinition = null;
+
+        try {
+            $entitiesDefinition = Yaml::parse(file_get_contents($this->entityDefinitionFilePath));
+        } catch (ParseException $e) {
+            printf("Impossible de lire le fichier de configuration [%s] : %s", $this->entityDefinitionFilePath, $e->getMessage());
+        }
+
         $entitiesSchema = new Schema();
-        $entitiesSchema->parseEntitiesSchema($entitiesSchemaArray);
+        $entitiesSchema->parseEntitiesSchema($entitiesDefinition);
 
         $databaseSchema = new Schema();
         $databaseSchema->parseDatabaseSchema($this->getDatabaseConnection()->getDatabaseDescription());
 
         return $this->dbSchemaManager->updateDatabase($entitiesSchema, $databaseSchema);
+    }
+
+    /**
+     * Retourne l'entity manager
+     *
+     * @return EntityManager
+     */
+    public function getEntityManager()
+    {
+        return $this->entityManager;
     }
 }
