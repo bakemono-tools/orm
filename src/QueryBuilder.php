@@ -69,19 +69,21 @@ class QueryBuilder
             if (is_array($options['search'])) {
                 $cpt = 0;
 
-                foreach ($options['where'] as $key => $value) {
-                    if ($cpt === 0) {
+                foreach ($options['search'] as $key => $value) {
+
+                    // Si la clause where n'a pas déjà été utilisée
+                    if ($cpt === 0 && !array_key_exists('where', $options)) {
                         $this->query .= " WHERE";
                     } else {
-                        $this->query .= " AND";
+                        $this->query .= " OR";
                     }
 
-                    $this->query .= " " . $key . " = " . $value;
+                    $this->query .= " " . $key . " LIKE \"%" . $value . "%\"";
 
                     $cpt++;
                 }
             } else {
-                die('Le clé "where" du tableau d\'option n\'est pas un tableau.');
+                die('Le clé "search" du tableau d\'option n\'est pas un tableau.');
             }
         }
 

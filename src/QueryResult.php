@@ -34,8 +34,10 @@ class QueryResult
      */
     function __construct(\PDOStatement $PDOQueryResult, string $entityDefinitionFilePath, string $entityName)
     {
-        $this->entityDefinitionFilePath = $entityDefinitionFilePath;
-        $this->parsePDOStatement($PDOQueryResult, $entityName);
+        if ($PDOQueryResult) {
+            $this->entityDefinitionFilePath = $entityDefinitionFilePath;
+            $this->parsePDOStatement($PDOQueryResult, $entityName);
+        }
     }
 
     /**
@@ -85,15 +87,11 @@ class QueryResult
     /**
      * Retourne le résultat de la requête sous forme de tableau d'objet
      *
-     * @return array | Entity
+     * @return array
      */
-    public function getResult()
+    public function getResult(): array
     {
-        if (count($this->result) < 2) {
-            return $this->result[0];
-        } else {
-            return $this->result;
-        }
+        return $this->result;
     }
 
     /**

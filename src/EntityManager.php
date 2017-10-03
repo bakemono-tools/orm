@@ -78,7 +78,7 @@ class EntityManager
      *
      * @param string $table
      * @param array $options
-     * @return QueryResult
+     * @return QueryResult | null
      */
     public function search(string $table, $options = []) {
 
@@ -95,6 +95,12 @@ class EntityManager
             }
         }
 
-        return new QueryResult($this->queryBuilder->select($table, $options), $this->entityDefinitionFilePath, $table);
+        $PDOResult = $this->queryBuilder->select($table, $options);
+
+        if ($PDOResult != false) {
+            return new QueryResult($PDOResult, $this->entityDefinitionFilePath, $table);
+        }
+
+        return null;
     }
 }
