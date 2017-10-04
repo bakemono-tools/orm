@@ -43,6 +43,7 @@ class QueryBuilder
          */
         if (array_key_exists('where', $options)) {
             if (is_array($options['where'])) {
+                
                 $cpt = 0;
 
                 foreach ($options['where'] as $key => $value) {
