@@ -49,14 +49,14 @@ class Orm
      *
      * @var string
      */
-    private $entityDefinitionFilePath;
+    private $entitiesSchema;
 
     /**
      * Orm constructor.
      * @param string $configurationFilePath Chemin ABSOLUE vers le fichier de configuration
-     * @param string $entityDefinitionFilePath Chemin ABSOLUE vers le fichier des entités
+     * @param Schema $entitiesSchema Chemin ABSOLUE vers le fichier des entités
      */
-    public function __construct(string $configurationFilePath, string $entityDefinitionFilePath)
+    public function __construct(string $configurationFilePath, Schema $entitiesSchema)
     {
         $config = null;
 
@@ -94,9 +94,9 @@ class Orm
             die("Une erreur est survenue lors de la lecture de la configuration. [" . __FILE__ . "][" . __LINE__ . "]");
         }
 
-        $this->entityDefinitionFilePath = $entityDefinitionFilePath;
+        $this->entitiesSchema = $entitiesSchema;
         $this->dbSchemaManager = new DatabaseSchemaManager($this->getDatabaseConnection()->getConnection());
-        $this->entityManager = new EntityManager($this->getDatabaseConnection(), $this->entityDefinitionFilePath);
+        $this->entityManager = new EntityManager($this->getDatabaseConnection(), $this->entitiesSchema);
     }
 
     /**
@@ -140,25 +140,10 @@ class Orm
      */
     public function updateDatabaseSchema()
     {
-        $entitiesDefinition = null;
-
-        try {
-            $entitiesDefinition = Yaml::parse(file_get_contents($this->entityDefinitionFilePath));
-        } catch (ParseException $e) {
-            printf(
-                "Impossible de lire le fichier de configuration [%s] : %s",
-                $this->entityDefinitionFilePath,
-                $e->getMessage()
-            );
-        }
-
-        $entitiesSchema = new Schema();
-        $entitiesSchema->parseEntitiesSchema($entitiesDefinition);
-
         $databaseSchema = new Schema();
         $databaseSchema->parseDatabaseSchema($this->getDatabaseConnection()->getDatabaseDescription());
 
-        return $this->dbSchemaManager->updateDatabase($entitiesSchema, $databaseSchema);
+        return $this->dbSchemaManager->updateDatabase($this->entitiesSchema, $databaseSchema);
     }
 
     /**

@@ -14,17 +14,17 @@ class EntityManager
     /**
      * @var string
      */
-    private $entityDefinitionFilePath;
+    private $entitiesSchema;
 
     /**
      * EntityManager constructor.
      * @param DatabaseConnection $connection
-     * @param string $entityDefinitionFilePath
+     * @param Schema $entitiesSchema
      */
-    public function __construct(DatabaseConnection $connection, string $entityDefinitionFilePath)
+    public function __construct(DatabaseConnection $connection, Schema $entitiesSchema)
     {
         $this->queryBuilder = new QueryBuilder($connection);
-        $this->entityDefinitionFilePath = $entityDefinitionFilePath;
+        $this->entitiesSchema = $entitiesSchema;
     }
 
     public function save(Entity $entity)
@@ -41,7 +41,7 @@ class EntityManager
      */
     public function list(string $table, array $options = [])
     {
-        return new QueryResult($this->queryBuilder->select($table, $options), $this->entityDefinitionFilePath, $table);
+        return new QueryResult($this->queryBuilder->select($table, $options), $this->entitiesSchema, $table);
     }
 
     /**
@@ -56,7 +56,7 @@ class EntityManager
 
         $options['limit'] = '1';
 
-        return new QueryResult($this->queryBuilder->select($table, $options), $this->entityDefinitionFilePath, $table);
+        return new QueryResult($this->queryBuilder->select($table, $options), $this->entitiesSchema, $table);
     }
 
     /**
@@ -74,7 +74,7 @@ class EntityManager
             'limit' => '1'
         ];
 
-        return new QueryResult($this->queryBuilder->select($table, $options), $this->entityDefinitionFilePath, $table);
+        return new QueryResult($this->queryBuilder->select($table, $options), $this->entitiesSchema, $table);
     }
 
     /**
@@ -103,7 +103,7 @@ class EntityManager
         $PDOResult = $this->queryBuilder->select($table, $options);
 
         if ($PDOResult != false) {
-            return new QueryResult($PDOResult, $this->entityDefinitionFilePath, $table);
+            return new QueryResult($PDOResult, $this->entitiesSchema, $table);
         }
 
         return null;
