@@ -66,7 +66,11 @@ class Orm
         try {
             $config = Yaml::parse(file_get_contents($configurationFilePath));
         } catch (ParseException $e) {
-            printf("Impossible de lire le fichier de configuration [%s] : %s", $configurationFilePath, $e->getMessage());
+            printf(
+                "Impossible de lire le fichier de configuration [%s] : %s",
+                $configurationFilePath,
+                $e->getMessage()
+            );
         }
 
         /**
@@ -141,7 +145,11 @@ class Orm
         try {
             $entitiesDefinition = Yaml::parse(file_get_contents($this->entityDefinitionFilePath));
         } catch (ParseException $e) {
-            printf("Impossible de lire le fichier de configuration [%s] : %s", $this->entityDefinitionFilePath, $e->getMessage());
+            printf(
+                "Impossible de lire le fichier de configuration [%s] : %s",
+                $this->entityDefinitionFilePath,
+                $e->getMessage()
+            );
         }
 
         $entitiesSchema = new Schema();

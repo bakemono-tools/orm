@@ -2,13 +2,12 @@
 
 namespace Orm;
 
-
 class Entity
 {
     private $label;
     private $properties;
 
-    public function __construct(string $entity, array $values = [], Schema $schema)
+    public function __construct(string $entity, Schema $schema, array $values = [])
     {
         $this->label = strtolower($entity);
 
@@ -27,24 +26,32 @@ class Entity
         }
     }
 
-    public function getProperties() {
+    public function getProperties()
+    {
         return $this->properties;
     }
 
-    public function set(string $property, string $value) {
+    public function set(string $property, string $value)
+    {
 
         if (!array_key_exists($property, $this->properties)) {
-            die('Vous ne pouvez pas modifier le champ "' . $property . '" sur l\'entité "' . $this->getLabel() . '" car ce champ n\'existe pas.');
+            die('Vous ne pouvez pas modifier le champ "'
+                . $property
+                . '" sur l\'entité "'
+                . $this->getLabel()
+                . '" car ce champ n\'existe pas.');
         }
 
         $this->properties[$property] = $value;
     }
 
-    public function get(string $property) {
+    public function get(string $property)
+    {
         return $this->properties[$property];
     }
 
-    public function getLabel() {
+    public function getLabel()
+    {
         return strtolower($this->label);
     }
 }

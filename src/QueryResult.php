@@ -8,7 +8,6 @@
 
 namespace Orm;
 
-
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -32,7 +31,7 @@ class QueryResult
      * @param string $entityDefinitionFilePath
      * @param string $entityName
      */
-    function __construct(\PDOStatement $PDOQueryResult, string $entityDefinitionFilePath, string $entityName)
+    public function __construct(\PDOStatement $PDOQueryResult, string $entityDefinitionFilePath, string $entityName)
     {
         if ($PDOQueryResult) {
             $this->entityDefinitionFilePath = $entityDefinitionFilePath;
@@ -53,7 +52,11 @@ class QueryResult
         try {
             $entities = Yaml::parse(file_get_contents($this->entityDefinitionFilePath));
         } catch (ParseException $e) {
-            printf("Impossible de lire le fichier de configuration [%s] : %s", $this->entityDefinitionFilePath, $e->getMessage());
+            printf(
+                "Impossible de lire le fichier de configuration [%s] : %s",
+                $this->entityDefinitionFilePath,
+                $e->getMessage()
+            );
         }
 
         $schema = new Schema();
@@ -80,7 +83,7 @@ class QueryResult
                 }
             }
 
-            $this->result[] = new Entity($entityName, $tmpArray, $schema);
+            $this->result[] = new Entity($entityName, $schema, $tmpArray);
         }
     }
 

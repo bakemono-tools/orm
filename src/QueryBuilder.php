@@ -2,7 +2,6 @@
 
 namespace Orm;
 
-
 class QueryBuilder
 {
     /**
@@ -70,7 +69,6 @@ class QueryBuilder
                 $cpt = 0;
 
                 foreach ($options['search'] as $key => $value) {
-
                     // Si la clause where n'a pas déjà été utilisée
                     if ($cpt === 0 && !array_key_exists('where', $options)) {
                         $this->query .= " WHERE";
@@ -118,12 +116,12 @@ class QueryBuilder
         return $this->connection->getConnection()->query($this->query);
     }
 
-    public function insert(string $table, array $values) {
+    public function insert(string $table, array $values)
+    {
 
         $this->query = "INSERT INTO " . $table . "(";
 
         foreach ($values as $key => $value) {
-
             if ($key != 'id') {
                 $this->query .= $key . ', ';
             }

@@ -27,7 +27,8 @@ class EntityManager
         $this->entityDefinitionFilePath = $entityDefinitionFilePath;
     }
 
-    public function save(Entity $entity) {
+    public function save(Entity $entity)
+    {
         $this->queryBuilder->insert($entity->getLabel(), $entity->getProperties());
     }
 
@@ -38,7 +39,8 @@ class EntityManager
      * @param array $options
      * @return QueryResult
      */
-    public function list(string $table, array $options = []) {
+    public function list(string $table, array $options = [])
+    {
         return new QueryResult($this->queryBuilder->select($table, $options), $this->entityDefinitionFilePath, $table);
     }
 
@@ -49,7 +51,8 @@ class EntityManager
      * @param array $options
      * @return QueryResult
      */
-    public function find(string $table, array $options = []) {
+    public function find(string $table, array $options = [])
+    {
 
         $options['limit'] = '1';
 
@@ -62,7 +65,8 @@ class EntityManager
      * @param string $table
      * @return QueryResult
      */
-    public function getLast(string $table) {
+    public function getLast(string $table)
+    {
         $options = [
             'order_by' => [
                 'id' => 'desc'
@@ -80,7 +84,8 @@ class EntityManager
      * @param array $options
      * @return QueryResult | null
      */
-    public function search(string $table, $options = []) {
+    public function search(string $table, $options = [])
+    {
 
         if (empty($options)) {
             die('Vous ne pouvez pas faire une recherche vide. [' . __FILE__ . "][" . __LINE__ . "]");

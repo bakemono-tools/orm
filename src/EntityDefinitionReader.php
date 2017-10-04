@@ -2,13 +2,13 @@
 
 namespace Orm;
 
-
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
 class EntityDefinitionReader
 {
-    public static function getEntitiesDefinition(string $entityName, string $filePath) {
+    public static function getEntitiesDefinition(string $entityName, string $filePath)
+    {
         $entities = [];
 
         try {
