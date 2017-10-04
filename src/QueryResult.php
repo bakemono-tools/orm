@@ -21,20 +21,20 @@ class QueryResult
     /**
      * Chemin absolue vers le fichier de définition des entités
      *
-     * @var string
+     * @var Schema
      */
-    private $entityDefinitionFilePath;
+    private $entitiesSchema;
 
     /**
      * QueryResult constructor.
      * @param \PDOStatement $PDOQueryResult
-     * @param string $entityDefinitionFilePath
+     * @param Schema $entitiesSchema
      * @param string $entityName
      */
-    public function __construct(\PDOStatement $PDOQueryResult, string $entityDefinitionFilePath, string $entityName)
+    public function __construct(\PDOStatement $PDOQueryResult, Schema $entitiesSchema, string $entityName)
     {
         if ($PDOQueryResult) {
-            $this->entityDefinitionFilePath = $entityDefinitionFilePath;
+            $this->entitiesSchema = $entitiesSchema;
             $this->parsePDOStatement($PDOQueryResult, $entityName);
         }
     }
@@ -47,21 +47,6 @@ class QueryResult
      */
     protected function parsePDOStatement(\PDOStatement $result, string $entityName)
     {
-        $entities = null;
-
-        try {
-            $entities = Yaml::parse(file_get_contents($this->entityDefinitionFilePath));
-        } catch (ParseException $e) {
-            printf(
-                "Impossible de lire le fichier de configuration [%s] : %s",
-                $this->entityDefinitionFilePath,
-                $e->getMessage()
-            );
-        }
-
-        $schema = new Schema();
-        $schema->parseEntitiesSchema($entities);
-
         $tmpArray = [];
 
         while ($row = $result->fetch()) {
@@ -83,7 +68,7 @@ class QueryResult
                 }
             }
 
-            $this->result[] = new Entity($entityName, $schema, $tmpArray);
+            $this->result[] = new Entity($entityName, $this->entitiesSchema, $tmpArray);
         }
     }
 
