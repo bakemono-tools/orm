@@ -27,7 +27,7 @@ class DatabaseConnection
                 . $connectionParams['dbname']
                 . ';charset=utf8', $connectionParams['user'], $connectionParams['password']);
         } catch (\Exception $e) {
-            throw new \Exception("Hurricane n'a pas pu se connecter à la base de données. ["
+            throw new \Exception("Bakemono ORM n'a pas pu se connecter à la base de données. ["
                 . __FILE__
                 . "]["
                 . __LINE__
