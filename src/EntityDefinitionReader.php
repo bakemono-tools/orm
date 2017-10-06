@@ -7,7 +7,12 @@ use Symfony\Component\Yaml\Yaml;
 
 class EntityDefinitionReader
 {
-    public static function getEntitiesDefinition(string $entityName, string $filePath)
+    /**
+     * @param string $filePath
+     * @param string|null $entityName
+     * @return array
+     */
+    public static function getEntitiesDefinition(string $filePath, string $entityName = null) : array
     {
         $entities = [];
 
@@ -17,6 +22,10 @@ class EntityDefinitionReader
             printf("Impossible de lire le fichier de configuration [%s] : %s", $filePath, $e->getMessage());
         }
 
-        return $entities[$entityName];
+        if ($entityName === null) {
+            return $entities;
+        } else {
+            return $entities[$entityName];
+        }
     }
 }
