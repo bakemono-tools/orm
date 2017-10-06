@@ -39,8 +39,14 @@ class EntityManager
      * @param array $options
      * @return QueryResult
      */
-    public function list(string $table, array $options = [])
+    public function list(string $table, array $options = []) : QueryResult
     {
+        if (!array_key_exists('order_by', $options)) {
+            $options['order_by'] = [
+                'id' => 'desc'
+            ];
+        }
+
         return new QueryResult($this->queryBuilder->select($table, $options), $this->entitiesSchema, $table);
     }
 
@@ -49,21 +55,27 @@ class EntityManager
      *
      * @param string $table
      * @param array $options
-     * @return QueryResult
+     * @return Entity
      */
     public function find(string $table, array $options = [])
     {
-
+        $options['where'] = $options;
         $options['limit'] = '1';
 
-        return new QueryResult($this->queryBuilder->select($table, $options), $this->entitiesSchema, $table);
+        $result = new QueryResult($this->queryBuilder->select($table, $options), $this->entitiesSchema, $table);
+        $entities = $result->getResult();
+
+        if (array_key_exists(0, $entities))
+            return $entities[0];
+        else
+            return null;
     }
 
     /**
      * Retourne la dernière entrée d'une table
      *
      * @param string $table
-     * @return QueryResult
+     * @return Entity
      */
     public function getLast(string $table)
     {
@@ -74,7 +86,13 @@ class EntityManager
             'limit' => '1'
         ];
 
-        return new QueryResult($this->queryBuilder->select($table, $options), $this->entitiesSchema, $table);
+        $result = new QueryResult($this->queryBuilder->select($table, $options), $this->entitiesSchema, $table);
+        $entities = $result->getResult();
+
+        if (array_key_exists(0, $entities))
+            return $entities[0];
+        else
+            return null;
     }
 
     /**
