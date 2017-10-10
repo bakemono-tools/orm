@@ -15,6 +15,11 @@ class Entity
 
         $schema = $schema->getTableDescription($entity);
 
+        /**
+         * On créé la propriété id car elle n'apparaît pas dans schema.yml
+         */
+        $this->properties['id'] = null;
+
         // On créé toutes les propriétés de l'objet en suivant son schema
         foreach ($schema as $field => $description) {
             $this->properties[$field] = null;
