@@ -53,7 +53,7 @@ class QueryBuilder
                         $this->query .= " AND";
                     }
 
-                    $this->query .= " " . $key . " = " . $value;
+                    $this->query .= " " . $key . $value;
 
                     $cpt++;
                 }
