@@ -64,7 +64,7 @@ class EntityManager
          * Donc on ajoute automatiquement le "=" pour évité de le faire soit même à chaque appelle de find()
          */
         foreach ($options as $key => $value) {
-            $options[$key] = "= " . $value;
+            $options[$key] = "= \"" . $value . "\"";
         }
 
         $options['where'] = $options;
