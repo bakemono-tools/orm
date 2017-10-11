@@ -153,7 +153,7 @@ class QueryBuilder
      */
     public static function equal(string $value): string
     {
-        return "= " . $value;
+        return "= \"" . $value . "\"";
     }
 
     /**
@@ -163,7 +163,7 @@ class QueryBuilder
      */
     public static function lessThan(string $value, bool $equal = false) : string
     {
-        $value = " " . $value;
+        $value = " \"" . $value . "\"";
 
         if ($equal) {
             $value = "=" . $value;
@@ -179,7 +179,7 @@ class QueryBuilder
      */
     public static function greaterThan(string $value, bool $equal = false) : string
     {
-        $value = " " . $value;
+        $value = " \"" . $value . "\"";
 
         if ($equal) {
             $value = "=" . $value;
