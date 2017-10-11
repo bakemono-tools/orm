@@ -59,6 +59,14 @@ class EntityManager
      */
     public function find(string $table, array $options = [])
     {
+        /**
+         * La méthode find permet de chercher qu'une seule entité, on a donc toujours "WHERE key = value" et non WHERE "key > value"
+         * Donc on ajoute automatiquement le "=" pour évité de le faire soit même à chaque appelle de find()
+         */
+        foreach ($options as $key => $value) {
+            $options[$key] = "= " . $value;
+        }
+
         $options['where'] = $options;
         $options['limit'] = '1';
 
@@ -125,5 +133,46 @@ class EntityManager
         }
 
         return null;
+    }
+
+    /**
+     * @param string $value
+     * @return string
+     */
+    public static function equal(string $value): string
+    {
+        return "= " . $value;
+    }
+
+    /**
+     * @param string $value
+     * @param bool $equal
+     * @return string
+     */
+    public static function lessThan(string $value, bool $equal = false) : string
+    {
+        $value = " " . $value;
+
+        if ($equal) {
+            $value = "=" . $value;
+        }
+
+        return "<" . $value;
+    }
+
+    /**
+     * @param string $value
+     * @param bool $equal
+     * @return string
+     */
+    public static function greaterThan(string $value, bool $equal = false) : string
+    {
+        $value = " " . $value;
+
+        if ($equal) {
+            $value = "=" . $value;
+        }
+
+        return ">" . $value;
     }
 }
