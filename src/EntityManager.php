@@ -134,45 +134,4 @@ class EntityManager
 
         return null;
     }
-
-    /**
-     * @param string $value
-     * @return string
-     */
-    public static function equal(string $value): string
-    {
-        return "= " . $value;
-    }
-
-    /**
-     * @param string $value
-     * @param bool $equal
-     * @return string
-     */
-    public static function lessThan(string $value, bool $equal = false) : string
-    {
-        $value = " " . $value;
-
-        if ($equal) {
-            $value = "=" . $value;
-        }
-
-        return "<" . $value;
-    }
-
-    /**
-     * @param string $value
-     * @param bool $equal
-     * @return string
-     */
-    public static function greaterThan(string $value, bool $equal = false) : string
-    {
-        $value = " " . $value;
-
-        if ($equal) {
-            $value = "=" . $value;
-        }
-
-        return ">" . $value;
-    }
 }
