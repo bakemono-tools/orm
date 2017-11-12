@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: melvin
- * Date: 01/10/17
- * Time: 13:15
- */
 
 namespace Orm;
 
@@ -47,6 +41,52 @@ class Schema
     public function parseEntitiesSchema(array $schema)
     {
         $this->schema = $schema['entities'];
+
+        /**
+         * On transforme les relations en colonnes et en tables
+         */
+        if (!empty($this->schema)) {
+            foreach ($this->schema as $tableName => $table) {
+                foreach ($table as $column => $description) {
+                    if ($description['type'] === 'oneToOne' || $description['type'] === 'manyToOne') {
+                        /**
+                         * On créé la colonne qui contiendra la clé étrangère de la relation
+                         */
+                        $this->schema[$tableName][$column . '_id'] = $this->schema[$tableName][$column];
+                        /**
+                         * On créé une clé relation pour garder en mémoir le type de la relation (utilisé dans \Orm\Entity::get())
+                         */
+                        $this->schema[$tableName][$column . '_id']['relation'] = $description['type'];
+                        $this->schema[$tableName][$column . '_id']['type'] = "BIGINT(20) UNSIGNED";
+                        unset($this->schema[$tableName][$column]);
+                    } elseif ($description['type'] === 'manyToMany') {
+                        /**
+                         * Pour les relations en Many to many, il faut créer une table à la volée dans le Schema
+                         */
+
+                        $tmpArray = array(
+                            $tableName,
+                            $description['entity']
+                        );
+
+                        sort($tmpArray);
+
+                        $this->schema[$tmpArray[0] . '_' . $tmpArray[1]] = array(
+                            $tmpArray[0] . '_id' => array(
+                                'type' => 'BIGINT(20) UNSIGNED',
+                                'null' => 'NO',
+                                'default' => null
+                            ),
+                            $tmpArray[1] . '_id' => array(
+                                'type' => 'BIGINT(20) UNSIGNED',
+                                'null' => 'NO',
+                                'default' => null
+                            )
+                        );
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -210,19 +250,30 @@ class Schema
         foreach ($this->getTableDescription($table) as $column => $description) {
             if (array_key_exists($column, $externalSchemaTable)) {
                 foreach ($description as $key => $item) {
-                    if ($externalSchemaTable[$column][$key] !== $item) {
+                    if ($item === 'oneToOne' || $item === 'manyToOne') {
+
+                    } elseif ($item === 'manyToMany') {
+
+                    } else {
 
                         /**
-                         * Si la clé 'updated' n'existe pas encore, on la créée
+                         * On test si la clé existe car par exemple, lors d'une relation
+                         * Le schema des entités décris en fichier contient une clé 'entity'
+                         * qui ne peut pas être comparé au schema de la db car cette clé n'existe pas en SQL
                          */
-                        if (!array_key_exists('updated', $tmpArray)) {
-                            $tmpArray['updated'] = [];
+                        if (array_key_exists($key, $externalSchemaTable[$column]) && strtolower($externalSchemaTable[$column][$key]) !== strtolower($item)) {
+                            /**
+                             * Si la clé 'updated' n'existe pas encore, on la créée
+                             */
+                            if (!array_key_exists('updated', $tmpArray)) {
+                                $tmpArray['updated'] = [];
+                            }
+
+                            /**
+                             * On ajoute la description modifié à la réponse
+                             */
+                            $tmpArray['updated'][$column] = $description;
                         }
-
-                        /**
-                         * On ajoute la description modifié à la réponse
-                         */
-                        $tmpArray['updated'][$column] = $description;
                     }
                 }
             } else {

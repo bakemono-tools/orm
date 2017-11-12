@@ -159,7 +159,6 @@ class DatabaseSchemaManager
      */
     public function createTable(string $tableName, array $TableDescription)
     {
-        print "Génération de la table [" . $tableName . "]\n\n";
 
         $query = 'CREATE TABLE IF NOT EXISTS ' . $tableName . ' (';
 
@@ -175,7 +174,13 @@ class DatabaseSchemaManager
                 $null = 'NOT NULL';
             }
 
-            $query .= $column . ' ' . $description['type'] . ' ' . $null . ', ';
+            if ($description['type'] === "oneToMany") {
+                return;
+            } elseif ($description['type'] === "manyToMany") {
+                return;
+            } else {
+                $query .= $column . ' ' . $description['type'] . ' ' . $null . ', ';
+            }
         }
 
         /**
@@ -185,6 +190,7 @@ class DatabaseSchemaManager
 
         $query .= ')';
 
+        print "Génération de la table [" . $tableName . "]\n\n";
         $this->connection->query($query);
     }
 
@@ -208,7 +214,6 @@ class DatabaseSchemaManager
      */
     public function createColumn(string $table, string $column, array $description)
     {
-        print "Création du champ [" . $table . "][" . $column . "].\n\n";
 
         if ($description['null'] == 'YES') {
             $null = 'NULL';
@@ -216,14 +221,22 @@ class DatabaseSchemaManager
             $null = 'NOT NULL';
         }
 
-        $this->connection->query('ALTER TABLE '
-            . $table
-            . ' ADD '
-            . $column
-            . ' '
-            . $description['type']
-            . ' '
-            . $null);
+        if ($description['type'] === "oneToMany") {
+            return;
+        } elseif ($description['type'] === "manyToMany") {
+            return;
+        } else {
+            $this->connection->query('ALTER TABLE '
+                . $table
+                . ' ADD '
+                . $column
+                . ' '
+                . $description['type']
+                . ' '
+                . $null);
+        }
+
+        print "Création du champ [" . $table . "][" . $column . "].\n\n";
     }
 
     /**
@@ -255,13 +268,19 @@ class DatabaseSchemaManager
             $null = 'NOT NULL';
         }
 
-        $this->connection->query('ALTER TABLE '
-            . $table
-            . ' MODIFY '
-            . $column
-            . ' '
-            . $description['type']
-            . ' '
-            . $null);
+        if ($description['type'] === "oneToMany") {
+            return;
+        } elseif ($description['type'] === "manyToMany") {
+            return;
+        } else {
+            $this->connection->query('ALTER TABLE '
+                . $table
+                . ' MODIFY '
+                . $column
+                . ' '
+                . $description['type']
+                . ' '
+                . $null);
+        }
     }
 }

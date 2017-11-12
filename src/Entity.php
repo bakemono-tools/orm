@@ -8,10 +8,12 @@ class Entity
 
     private $label;
     private $properties;
+    private $schema;
 
     public function __construct(string $entity, Schema $schema, array $values = [])
     {
         $this->label = strtolower($entity);
+        $this->schema = $schema;
 
         $schema = $schema->getTableDescription($entity);
 
@@ -63,11 +65,39 @@ class Entity
 
     /**
      * @param string $property
-     * @return mixed
+     * @param EntityManager $em
+     * @return Entity
      */
-    public function get(string $property)
+    public function get(string $property, EntityManager $em)
     {
-        return $this->properties[$property];
+        $table = $this->schema->getTableDescription($this->label);
+
+
+        if (array_key_exists(Singularize::singularize($property) . "_id", $table)) {
+            $description = $table[Singularize::singularize($property) . "_id"];
+
+            if (array_key_exists('relation', $description)) {
+                switch ($description['relation']) {
+                    case 'oneToOne':
+                        return $em->find($description['entity'], [
+                            $this->label . '_id' => $this->get('id', $em)
+                        ]);
+                        break;
+                    case 'oneToMany':
+                        break;
+                    case 'manyToOne':
+                        break;
+                    case 'manyToMany':
+                        break;
+                    default:
+                        return $this->properties[Singularize::singularize($property) . "_id"];
+                }
+            } else {
+                return $this->properties[Singularize::singularize($property) . "_id"];
+            }
+        } else {
+            return $this->properties[$property];
+        }
     }
 
     /**
